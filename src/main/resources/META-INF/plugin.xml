@@ -25,9 +25,6 @@
         <projectService serviceImplementation="com.example.javagenai.coverage.CoverageService"/>
         <projectService serviceImplementation="com.example.javagenai.coverage.CoverageImprovementCoordinator"/>
         <projectService serviceImplementation="com.example.javagenai.ui.model.ToolWindowStateService"/>
-        <projectService serviceImplementation="com.example.javagenai.rfa.service.RfaImportService"/>
-        <projectService serviceImplementation="com.example.javagenai.rfa.service.RfaSessionService"/>
-        <projectService serviceImplementation="com.example.javagenai.rfa.planner.RfaPlanner"/>
 
         <toolWindow id="Java Gen AI"
                     anchor="right"
@@ -55,13 +52,6 @@
             <action id="com.example.javagenai.actions.ImproveCoverageAction"
                     class="com.example.javagenai.actions.ImproveCoverageAction"
                     text="Improve test coverage for this file/package"/>
-            <separator/>
-            <action id="com.example.javagenai.actions.ImportRfaAction"
-                    class="com.example.javagenai.actions.ImportRfaAction"
-                    text="Import RFA"/>
-            <action id="com.example.javagenai.actions.BuildRfaImplementationPlanAction"
-                    class="com.example.javagenai.actions.BuildRfaImplementationPlanAction"
-                    text="Build Implementation Plan from RFA"/>
         </group>
     </actions>
 </idea-plugin>

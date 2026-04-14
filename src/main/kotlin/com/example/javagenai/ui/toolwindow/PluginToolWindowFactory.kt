@@ -25,11 +25,6 @@ class PluginToolWindowFactory : ToolWindowFactory {
         val summaryLabel = JBLabel("Idle")
         val coverageLabel = JBLabel("Coverage: n/a")
 
-        val rfaPathLabel = JBLabel("RFA: none")
-        val rfaSummaryArea = JTextArea().apply { isEditable = false }
-        val rfaWarningsArea = JTextArea().apply { isEditable = false }
-        val rfaPlanArea = JTextArea().apply { isEditable = false }
-
         val generatedFilesPanel = JBPanel<JBPanel<*>>(BorderLayout()).apply {
             border = BorderFactory.createTitledBorder("Generated / Updated Files")
             add(JBScrollPane(generatedFilesList), BorderLayout.CENTER)
@@ -57,26 +52,9 @@ class PluginToolWindowFactory : ToolWindowFactory {
             add(JBScrollPane(diffArea), BorderLayout.CENTER)
         }
 
-        val rfaPanel = JBPanel<JBPanel<*>>(BorderLayout()).apply {
-            border = BorderFactory.createTitledBorder("RFA Import & Plan")
-            val text = JTextArea().apply { isEditable = false }
-            val rfaTop = JBPanel<JBPanel<*>>(BorderLayout()).apply {
-                add(rfaPathLabel, BorderLayout.NORTH)
-                add(JBScrollPane(rfaSummaryArea), BorderLayout.CENTER)
-            }
-            text.document = rfaPlanArea.document
-            val lower = JSplitPane(JSplitPane.VERTICAL_SPLIT, JBScrollPane(rfaWarningsArea), JBScrollPane(text)).apply {
-                resizeWeight = 0.35
-            }
-            add(rfaTop, BorderLayout.NORTH)
-            add(lower, BorderLayout.CENTER)
-        }
-
-        val leftUpper = JSplitPane(JSplitPane.VERTICAL_SPLIT, generatedFilesPanel, statusPanel).apply { resizeWeight = 0.4 }
-        val leftSplit = JSplitPane(JSplitPane.VERTICAL_SPLIT, leftUpper, rfaPanel).apply { resizeWeight = 0.65 }
-
+        val leftSplit = JSplitPane(JSplitPane.VERTICAL_SPLIT, generatedFilesPanel, statusPanel).apply { resizeWeight = 0.4 }
         val rightSplit = JSplitPane(JSplitPane.VERTICAL_SPLIT, errorsPanel, diffPanel).apply { resizeWeight = 0.3 }
-        val mainSplit = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, rightSplit).apply { resizeWeight = 0.45 }
+        val mainSplit = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, rightSplit).apply { resizeWeight = 0.35 }
 
         project.getService(ToolWindowStateService::class.java).subscribe { state ->
             generatedFilesModel.clear()
@@ -86,27 +64,6 @@ class PluginToolWindowFactory : ToolWindowFactory {
             diffArea.text = state.diffPreview
             summaryLabel.text = state.summary
             coverageLabel.text = state.coverageSummary
-
-            rfaPathLabel.text = "RFA: ${state.importedRfaPath ?: "none"}"
-            rfaSummaryArea.text = state.rfaSummary
-            rfaWarningsArea.text = if (state.rfaWarnings.isEmpty()) "Warnings: none" else "Warnings:\n${state.rfaWarnings.joinToString("\n")}" +
-                if (state.rfaAmbiguities.isNotEmpty()) "\n\nAmbiguities:\n${state.rfaAmbiguities.joinToString("\n")}" else ""
-
-            val planText = state.rfaPlan?.let { plan ->
-                buildString {
-                    appendLine(plan.title)
-                    appendLine(plan.summary)
-                    appendLine("--- Planned changes ---")
-                    plan.changes.forEachIndexed { idx, ch ->
-                        appendLine("${idx + 1}. [${ch.layer}] ${ch.action} -> ${ch.targetPath}")
-                        appendLine("   rationale: ${ch.rationale}")
-                        if (ch.patternMatches.isNotEmpty()) {
-                            appendLine("   similar: ${ch.patternMatches.joinToString { it.filePath }}")
-                        }
-                    }
-                }
-            } ?: "Plan: not built"
-            rfaPlanArea.text = planText
         }
 
         val root = JBPanel<JBPanel<*>>(BorderLayout()).apply { add(mainSplit, BorderLayout.CENTER) }
