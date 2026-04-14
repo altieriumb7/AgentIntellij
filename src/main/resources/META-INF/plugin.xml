@@ -1,0 +1,67 @@
+<idea-plugin>
+    <id>com.example.javagenai</id>
+    <name>Java Gen AI Assistant</name>
+    <vendor email="dev@example.com" url="https://example.com">Example</vendor>
+
+    <description>
+        First-pass architecture for Java-focused code and JUnit generation with pluggable AI providers.
+    </description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable
+                id="com.example.javagenai.settings"
+                displayName="Java Gen AI"
+                instance="com.example.javagenai.settings.PluginSettingsConfigurable"/>
+
+        <projectService serviceImplementation="com.example.javagenai.analysis.PatternAnalyzerService"/>
+        <projectService serviceImplementation="com.example.javagenai.context.JavaContextCollector"/>
+        <projectService serviceImplementation="com.example.javagenai.context.PromptContextAssembler"/>
+        <projectService serviceImplementation="com.example.javagenai.services.GenerationOrchestrator"/>
+        <projectService serviceImplementation="com.example.javagenai.generation.LlmGenerationCoordinator"/>
+        <projectService serviceImplementation="com.example.javagenai.generation.TestGenerationService"/>
+        <projectService serviceImplementation="com.example.javagenai.execution.TestExecutionService"/>
+        <projectService serviceImplementation="com.example.javagenai.coverage.CoverageService"/>
+        <projectService serviceImplementation="com.example.javagenai.coverage.CoverageImprovementCoordinator"/>
+        <projectService serviceImplementation="com.example.javagenai.ui.model.ToolWindowStateService"/>
+        <projectService serviceImplementation="com.example.javagenai.rfa.service.RfaImportService"/>
+        <projectService serviceImplementation="com.example.javagenai.rfa.service.RfaSessionService"/>
+        <projectService serviceImplementation="com.example.javagenai.rfa.planner.RfaPlanner"/>
+
+        <toolWindow id="Java Gen AI"
+                    anchor="right"
+                    factoryClass="com.example.javagenai.ui.toolwindow.PluginToolWindowFactory"
+                    icon="AllIcons.Toolwindows.ToolWindowMessages"/>
+    </extensions>
+
+    <actions>
+        <group id="com.example.javagenai.actions.Group"
+               text="Java Gen AI"
+               popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <action id="com.example.javagenai.actions.GenerateJUnitAction"
+                    class="com.example.javagenai.actions.GenerateJUnitAction"
+                    text="Generate JUnit for this class"/>
+            <action id="com.example.javagenai.actions.RepairFailingTestsAction"
+                    class="com.example.javagenai.actions.RepairFailingTestsAction"
+                    text="Repair failing JUnit tests"/>
+            <action id="com.example.javagenai.actions.GenerateCodeWithPatternsAction"
+                    class="com.example.javagenai.actions.GenerateCodeWithPatternsAction"
+                    text="Generate code following project patterns"/>
+            <action id="com.example.javagenai.actions.AnalyzeTestingConventionsAction"
+                    class="com.example.javagenai.actions.AnalyzeTestingConventionsAction"
+                    text="Analyze project testing conventions"/>
+            <action id="com.example.javagenai.actions.ImproveCoverageAction"
+                    class="com.example.javagenai.actions.ImproveCoverageAction"
+                    text="Improve test coverage for this file/package"/>
+            <separator/>
+            <action id="com.example.javagenai.actions.ImportRfaAction"
+                    class="com.example.javagenai.actions.ImportRfaAction"
+                    text="Import RFA"/>
+            <action id="com.example.javagenai.actions.BuildRfaImplementationPlanAction"
+                    class="com.example.javagenai.actions.BuildRfaImplementationPlanAction"
+                    text="Build Implementation Plan from RFA"/>
+        </group>
+    </actions>
+</idea-plugin>
